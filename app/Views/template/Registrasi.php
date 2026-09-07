@@ -19,11 +19,11 @@
           </div>
           <div class="mb-3">
             <label for="no_hp" class="form-label">No. HP</label>
-            <input type="text" id="no_hp" name="no_hp" class="form-control" placeholder="Masukkan nomor HP">
+            <input type="text" id="no_hp" name="no_hp" class="form-control" placeholder="Masukkan nomor HP" required>
           </div>
           <div class="mb-3">
             <label for="alamat" class="form-label">Alamat</label>
-            <textarea id="alamat" name="alamat" class="form-control" rows="2" placeholder="Masukkan alamat"></textarea>
+            <textarea id="alamat" name="alamat" class="form-control" rows="2" placeholder="Masukkan alamat" required></textarea>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>

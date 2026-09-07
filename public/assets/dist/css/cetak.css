@@ -1,0 +1,66 @@
+* {
+color: black;
+font-size:9px;	 
+}
+
+#zone {}
+
+#zone table {	border: none;}
+
+#zone thead {display: table-header-group;}
+#zone thead tr {}
+
+#zone thead td, #zone thead th, #zone tfoot td {
+	text-align: center;
+	/*background-color: #C3C3C3;*/
+	/*color: white;*/
+	font-weight: bold;
+	border-top: solid 1px gray;
+}	
+	
+#zone td {
+	padding-right: 2px;
+	border-bottom: solid 1px #C3C3C3; /* Do not mark double boder */
+	border-left: solid 1px #C3C3C3;
+}
+#zonez {}
+
+#zonez table {border: none;}
+
+#zonez thead tr {
+	color: white;
+}
+
+#zonez thead td, #zonez thead th, #zonez tfoot td {
+	text-align: center;
+	font-weight: bold;
+}	
+	
+#zonez td {
+	padding-right: 2px;
+}
+
+#zoney {}
+
+#zoney table {border: none;}
+
+#zoney thead tr {}
+
+#zoney thead td, #zoney thead th, #zoney tfoot td {
+	text-align: center;
+	/*background-color: #C3C3C3;*/
+	/*color: white;*/
+	font-weight: bold;
+	border-top: solid 1px gray;
+}	
+	
+#zoney td {
+	padding-right: 2px;
+	border-bottom: solid 1px #C3C3C3; /* Do not mark double boder */
+	border-left: solid 1px #C3C3C3;
+}
+
+.xx {
+	font-size:20px;
+
+}

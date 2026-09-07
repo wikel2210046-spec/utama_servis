@@ -1,0 +1,28 @@
+# Environment
+.env
+.env.local
+.env.*.local
+# Composer
+/vendor/
+
+# Node
+/node_modules/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Backup
+*.zip
+*.rar
+*.7z
+*.sql
+
+# Writable
+writable/debugbar/
+writable/logs/
+writable/session/

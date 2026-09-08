@@ -40,6 +40,18 @@ class Dashboard extends Controller
 }
 public function dashboard()
 {
+    // Cek login
+    if (!session()->get('loggedin')) {
+        return redirect()->to(base_url('/login'));
+    }
+
+    // Cek hak akses
+    $level = session()->get('level');
+
+    if ($level !== 'admin' && $level !== 'pimpinan') {
+        return redirect()->to(base_url('/'));
+    }
+
     // Total transaksi
     $totalTransaksi = $this->transaksiModel->countAllResults();
 

@@ -12,8 +12,17 @@ class Home extends BaseController
     $this->pemesananModel = new Mpemesanan();
 }
 
-   public function index(): string
+   public function index()
 {
+     // Jika sudah login sebagai admin atau pimpinan,
+    // langsung arahkan ke dashboard
+    if (session()->get('loggedin')) {
+        $level = session()->get('level');
+
+        if ($level === 'admin' || $level === 'pimpinan') {
+            return redirect()->to(base_url('/Dashboard/dashboard'));
+        }
+    }
     $servisModel = new \App\Models\Mservis();
     $data['servis'] = $servisModel->findAll();
 

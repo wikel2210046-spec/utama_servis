@@ -329,6 +329,8 @@ class Penjualansparepart extends Controller
             'tanggal_akhir' => $tanggal_akhir,
             'pelanggan_terpilih' => $pelanggan_terpilih,
             'periode' => $periode,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
         ];
 
         return view('Penjualan/laporan_penjualan', $data);

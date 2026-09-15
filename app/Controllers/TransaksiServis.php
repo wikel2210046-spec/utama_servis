@@ -718,7 +718,7 @@ class TransaksiServis extends BaseController
                 $pesan .= "Pemberitahuan dari *Utama Service Station*:\n";
                 $pesan .= "Kendaraan Anda *{$tipe}* (*{$nopol}*) telah *SELESAI DISERVIS*. 🚗✨\n\n";
                 $pesan .= "📋 *Kode Pemesanan:* {$kode}\n";
-                $pesan .= "💰 *Estimasi Total Biaya:* Rp {$total}\n\n";
+                $pesan .= "💰 * Total Biaya:* Rp {$total}\n\n";
                 $pesan .= "Kendaraan Anda sudah dapat diambil di bengkel kami.\n";
                 $pesan .= "Terima kasih atas kepercayaan Anda telah menggunakan layanan *Utama Service Station*! 🙏";
 

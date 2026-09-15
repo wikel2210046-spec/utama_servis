@@ -130,7 +130,7 @@
                 <label class="form-label fw-semibold small text-secondary mb-1">Periode</label>
                 <select name="periode" id="select-periode" class="form-control form-control-sm" onchange="toggleFilterFields()">
                     <option value="">Pilih Periode</option>
-                    <option value="hari" <?= ($periode ?? '') == 'hari' ? 'selected' : '' ?>>Per Hari</option>
+                    <option value="hari" <?= ($periode ?? '') == 'hari' ? 'selected' : '' ?>>Per Tanggal</option>
                     <option value="bulan" <?= ($periode ?? '') == 'bulan' ? 'selected' : '' ?>>Per Bulan</option>
                     <option value="tahun" <?= ($periode ?? '') == 'tahun' ? 'selected' : '' ?>>Per Tahun</option>
                 </select>

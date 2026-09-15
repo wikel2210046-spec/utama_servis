@@ -674,8 +674,21 @@ class TransaksiServis extends BaseController
         if ($this->request->isAJAX()) {
             $idTransaksi = $this->request->getPost('id_transaksi');
 
-            // Ambil data transaksi untuk mendapatkan id_pemesanan
-            $transaksi = $this->transaksiModel->find($idTransaksi);
+            // Ambil data transaksi lengkap beserta relasi pelanggan, pemesanan, dan mobil
+            $transaksi = $this->transaksiModel
+                ->select('
+                    transaksi_servis.*, 
+                    pelanggan.nama_pelanggan, 
+                    pelanggan.no_hp, 
+                    mobil.no_polisi, 
+                    mobil.tipe,
+                    pemesanan.kode_pemesanan
+                ')
+                ->join('pelanggan', 'pelanggan.id_pelanggan = transaksi_servis.id_pelanggan', 'left')
+                ->join('pemesanan', 'pemesanan.id_pemesanan = transaksi_servis.id_pemesanan', 'left')
+                ->join('mobil', 'mobil.id_mobil = pemesanan.id_mobil', 'left')
+                ->where('transaksi_servis.id_transaksi', $idTransaksi)
+                ->first();
 
             if (!$transaksi) {
                 return $this->response->setJSON(['error' => 'Data transaksi tidak ditemukan.']);
@@ -690,7 +703,109 @@ class TransaksiServis extends BaseController
             // Update status pemesanan menjadi 'selesai servis'
             $this->pemesananModel->update($idPemesanan, ['status' => 'selesai servis']);
 
-            return $this->response->setJSON(['sukses' => 'Status servis berhasil diubah menjadi Selesai Servis.']);
+            // Kirim Notifikasi WhatsApp Otomatis ke Pelanggan
+            $waTerkirim = false;
+            if (!empty($transaksi['no_hp'])) {
+                helper('wa');
+
+                $nama = $transaksi['nama_pelanggan'] ?? 'Pelanggan';
+                $nopol = $transaksi['no_polisi'] ?? '-';
+                $tipe = $transaksi['tipe'] ?? '-';
+                $kode = $transaksi['kode_pemesanan'] ?? '-';
+                $total = number_format($transaksi['total_biaya'] ?? 0, 0, ',', '.');
+
+                $pesan = "Halo *{$nama}*,\n\n";
+                $pesan .= "Pemberitahuan dari *Utama Service Station*:\n";
+                $pesan .= "Kendaraan Anda *{$tipe}* (*{$nopol}*) telah *SELESAI DISERVIS*. 🚗✨\n\n";
+                $pesan .= "📋 *Kode Pemesanan:* {$kode}\n";
+                $pesan .= "💰 *Estimasi Total Biaya:* Rp {$total}\n\n";
+                $pesan .= "Kendaraan Anda sudah dapat diambil di bengkel kami.\n";
+                $pesan .= "Terima kasih atas kepercayaan Anda telah menggunakan layanan *Utama Service Station*! 🙏";
+
+                $res = kirim_wa($transaksi['no_hp'], $pesan);
+                if (!empty($res['status']) && $res['status'] === true) {
+                    $waTerkirim = true;
+                }
+            }
+
+            $pesanSukses = 'Status servis berhasil diubah menjadi Selesai Servis.';
+            if ($waTerkirim) {
+                $pesanSukses .= ' Notifikasi WhatsApp berhasil dikirim ke pelanggan.';
+            }
+
+            return $this->response->setJSON(['sukses' => $pesanSukses]);
+        }
+    }
+
+    public function batalSelesaiServis()
+    {
+        if ($this->request->isAJAX()) {
+            $idTransaksi = $this->request->getPost('id_transaksi');
+
+            // Ambil data transaksi lengkap beserta relasi pelanggan, pemesanan, dan mobil
+            $transaksi = $this->transaksiModel
+                ->select('
+                    transaksi_servis.*, 
+                    pelanggan.nama_pelanggan, 
+                    pelanggan.no_hp, 
+                    mobil.no_polisi, 
+                    mobil.tipe,
+                    pemesanan.kode_pemesanan
+                ')
+                ->join('pelanggan', 'pelanggan.id_pelanggan = transaksi_servis.id_pelanggan', 'left')
+                ->join('pemesanan', 'pemesanan.id_pemesanan = transaksi_servis.id_pemesanan', 'left')
+                ->join('mobil', 'mobil.id_mobil = pemesanan.id_mobil', 'left')
+                ->where('transaksi_servis.id_transaksi', $idTransaksi)
+                ->first();
+
+            if (!$transaksi) {
+                return $this->response->setJSON(['error' => 'Data transaksi tidak ditemukan.']);
+            }
+
+            $idPemesanan = $transaksi['id_pemesanan'];
+
+            if (empty($idPemesanan)) {
+                return $this->response->setJSON(['error' => 'Transaksi ini tidak memiliki data pemesanan.']);
+            }
+
+            // Cek apakah transaksi sudah dibayar (status 'selesai')
+            $pemesanan = $this->pemesananModel->find($idPemesanan);
+            if ($pemesanan && $pemesanan['status'] == 'selesai') {
+                return $this->response->setJSON(['error' => 'Transaksi sudah dibayar, status tidak dapat dibatalkan.']);
+            }
+
+            // Kembalikan status pemesanan menjadi 'proses'
+            $this->pemesananModel->update($idPemesanan, ['status' => 'proses']);
+
+            // Kirim Notifikasi Klarifikasi WhatsApp ke Pelanggan
+            $waTerkirim = false;
+            if (!empty($transaksi['no_hp'])) {
+                helper('wa');
+
+                $nama = $transaksi['nama_pelanggan'] ?? 'Pelanggan';
+                $nopol = $transaksi['no_polisi'] ?? '-';
+                $tipe = $transaksi['tipe'] ?? '-';
+                $kode = $transaksi['kode_pemesanan'] ?? '-';
+
+                $pesan = "Halo *{$nama}*,\n\n";
+                $pesan .= "Mohon maaf atas ketidaknyamanannya. Kami ingin menginformasikan bahwa terjadi kekeliruan status pada pemberitahuan sebelumnya.\n\n";
+                $pesan .= "Kendaraan Anda *{$tipe}* (*{$nopol}*) saat ini *MASIH DALAM PROSES SERVIS* di *Utama Service Station*. 🔧🚗\n\n";
+                $pesan .= "📋 *Kode Pemesanan:* {$kode}\n\n";
+                $pesan .= "Kami akan segera menginformasikan kembali via WhatsApp jika pengerjaan servis telah selesai seluruhnya.\n";
+                $pesan .= "Terima kasih banyak atas pengertian dan kesabaran Anda! 🙏";
+
+                $res = kirim_wa($transaksi['no_hp'], $pesan);
+                if (!empty($res['status']) && $res['status'] === true) {
+                    $waTerkirim = true;
+                }
+            }
+
+            $pesanSukses = 'Status selesai servis berhasil dibatalkan (dikembalikan ke Proses).';
+            if ($waTerkirim) {
+                $pesanSukses .= ' Notifikasi WhatsApp pembatalan telah dikirim ke pelanggan.';
+            }
+
+            return $this->response->setJSON(['sukses' => $pesanSukses]);
         }
     }
 

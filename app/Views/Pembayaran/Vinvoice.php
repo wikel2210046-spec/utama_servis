@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Invoice Servis - Utama Service Station</title>
+    <title>Nota Servis - Utama Service Station</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -71,6 +71,8 @@
         <div style="flex: 1;"></div>
     </div>
     <hr>
+    <h3 style="margin: 0; text-align: center;">Nota Pembayaran Servis</h3>
+    <br>
     <table>
         <tr>
             <th><strong>Tanggal Servis</strong></th>

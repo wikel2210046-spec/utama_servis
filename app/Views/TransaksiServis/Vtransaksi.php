@@ -92,6 +92,11 @@
                                         <i class="fa fa-check"></i>
                                     </button>
                                     <?php endif; ?>
+                                    <?php if (($row['status_pemesanan'] ?? '') == 'selesai servis'): ?>
+                                    <button onclick="batalSelesaiServis('<?= $row['id_transaksi'] ?>')" class="btn btn-warning btn-sm" title="Batal Selesai Servis">
+                                        <i class="fa fa-undo"></i>
+                                    </button>
+                                    <?php endif; ?>
                                     <!-- <button onclick="hapus('<?= $row['id_transaksi'] ?>')" class="btn btn-danger btn-sm">
                                     <i class="fa fa-trash"></i>
                                     </button> -->
@@ -211,6 +216,60 @@
             }
         });
     }
+
+    // === Batal Selesai Servis ===
+    function batalSelesaiServis(id_transaksi) {
+        Swal.fire({
+            title: 'Batal Selesai Servis',
+            html: 'Apakah Anda yakin ingin membatalkan status selesai servis untuk transaksi <strong>' + id_transaksi + '</strong>?<br><small class="text-muted">Status akan dikembalikan ke Proses.</small>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffc107',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Tutup',
+        }).then((result) => {
+            if (result.value === true) {
+                $.ajax({
+                    type: "POST",
+                    url: "<?= site_url('TransaksiServis/batalSelesaiServis') ?>",
+                    data: {
+                        id_transaksi: id_transaksi,
+                        <?= csrf_token() ?>: '<?= csrf_hash() ?>'
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.sukses) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.sukses,
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else if (response.error) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: response.error
+                            });
+                        }
+                    },
+                    error: function (xhr, thrownError) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan sistem: ' + thrownError + ' (' + xhr.status + ')'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     function hapus(id_transaksi) {
         Swal.fire({
             title: 'Hapus Transaksi',

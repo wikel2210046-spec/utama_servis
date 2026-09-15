@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice Penjualan - Utama Service Station</title>
+    <title>Nota Penjualan - Utama Service Station</title>
     <style>
         body {
             font-family: 'Courier New', monospace;
@@ -53,6 +53,8 @@
     <div style="flex: 1;"></div>
 </div>
 <hr>
+<h3 style="margin: 0; text-align: center;">Nota Pembayaran Penjualan</h3>
+    <br>    
 <table>
     <tr>
         <th width="20%" class="left">Kode Penjualan</th>
